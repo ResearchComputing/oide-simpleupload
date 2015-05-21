@@ -1,4 +1,4 @@
-# oide-supl
+# oide-simpleupload
 Simple HTTP upload app for the OIDE.
 
 **Installing OIDE Simple HTTP Upload**
@@ -7,8 +7,8 @@ The OIDE Simple HTTP Upload requires that you first install [The OIDE](https://g
 
 Once the OIDE is installed, clone the OIDE Simple HTTP Upload repository and enter the project directory:
 ```
-git clone https://github.com/ResearchComputing/oide-supl.git
-cd oide-supl
+git clone https://github.com/ResearchComputing/oide-simpleupload.git
+cd oide-simpleupload
 ```
 Then, build the dependencies for the front-end components:
 ```
