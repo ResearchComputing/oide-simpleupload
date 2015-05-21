@@ -1,0 +1,10 @@
+{
+  "name": "OIDE - Simple Upload App",
+  "description": "Online Integrated Development Environment Extension - HTTP Upload",
+  "homepage": "https://github.com/ResearchComputing/OIDE.git",
+  "license": "AGPLv3",
+  "private": true,
+  "dependencies": {
+    "angular-file-upload": ""
+  }
+}

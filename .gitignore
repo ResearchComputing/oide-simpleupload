@@ -55,3 +55,8 @@ docs/_build/
 
 # PyBuilder
 target/
+
+bower_components/
+node_modules/
+tmp/
+nohup.out
