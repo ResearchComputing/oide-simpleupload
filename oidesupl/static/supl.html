@@ -4,13 +4,27 @@
       <h3>Select files and destination</h3>
 
       <p><strong>Upload Directory:</strong> <em>No directory selected</em></p>
-      <div class="btn btn-default">
+      <div
+        class="btn btn-default"
+        ng-init="pathSelected=false"
+        ng-click="pathSelected=true"
+      >
         <span>Choose destination</span>
       </div>
       <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
-      <div class="file-upload btn btn-success">
+      <div
+        class="file-upload btn btn-success"
+        ng-disabled="!pathSelected"
+      >
         <span>Choose files</span>
-        <input type="file" nv-file-select="" uploader="uploader" multiple  class="upload"/><br/>
+        <input
+          type="file"
+          nv-file-select=""
+          uploader="uploader"
+          multiple
+          class="upload"
+         />
+        <br/>
       </div>
     </div>
 
@@ -44,13 +58,27 @@
               <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
             </td>
             <td nowrap>
-              <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+              <button
+                type="button"
+                class="btn btn-success btn-xs"
+                ng-click="item.upload()"
+                ng-disabled="!pathSelected || item.isReady || item.isUploading || item.isSuccess"
+              >
                 <span class="fa fa-arrow-circle-o-up"></span> Upload
               </button>
-              <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+              <button
+                type="button"
+                class="btn btn-warning btn-xs"
+                ng-click="item.cancel()"
+                ng-disabled="!item.isUploading"
+              >
                 <span class="fa fa-ban"></span> Cancel
               </button>
-              <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+              <button
+                type="button"
+                class="btn btn-danger btn-xs"
+                ng-click="item.remove()"
+              >
                 <span class="fa fa-trash-o"></span> Remove
               </button>
             </td>

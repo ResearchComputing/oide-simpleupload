@@ -10,17 +10,19 @@ angular.module('oide.supl', ['ngRoute','ui.bootstrap','angularFileUpload'])
 }])
 .controller('SuplCtrl', ['$scope', 'FileUploader', '$log', function($scope,FileUploader,$log) {
   var uploader = $scope.uploader = new FileUploader({
-       url: 'upload.php'
+       url: '/supl/a/upload',
+       headers: {'X-XSRFToken': getCookie('_xsrf')},
+       formData: []
    });
 
    // FILTERS
 
-   uploader.filters.push({
-       name: 'customFilter',
-       fn: function(item /*{File|FileLikeObject}*/, options) {
-           return this.queue.length < 10;
-       }
-   });
+  //  uploader.filters.push({
+  //      name: 'customFilter',
+  //      fn: function(item /*{File|FileLikeObject}*/, options) {
+  //          return this.queue.length < 10;
+  //      }
+  //  });
 
    // CALLBACKS
 
