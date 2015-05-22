@@ -65,13 +65,13 @@
             <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
           </div>
         </div>
-        <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
+        <button type="button" class="btn btn-success btn-sm" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
           <span class="fa fa-arrow-circle-o-up"></span> Upload all
         </button>
-        <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
+        <button type="button" class="btn btn-warning btn-sm" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
           <span class="fa fa-ban"></span> Cancel all
         </button>
-        <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
+        <button type="button" class="btn btn-danger btn-sm" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
           <span class="fa fa-trash-o"></span> Remove all
         </button>
       </div>
