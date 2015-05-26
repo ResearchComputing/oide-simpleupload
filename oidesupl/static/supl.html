@@ -3,18 +3,18 @@
     <div class="col-md-3">
       <h3>Select files and destination</h3>
 
-      <p><strong>Upload Directory:</strong> <em>No directory selected</em></p>
+      <p><strong>Upload Directory:</strong> <em ng-bind='dirpath'></em></p>
       <div
         class="btn btn-default"
-        ng-init="pathSelected=false"
-        ng-click="pathSelected=true"
+        ng-init="dirSelected=false"
+        ng-click="selectDirectory()"
       >
         <span>Choose destination</span>
       </div>
       <!-- Example: nv-file-select="" uploader="{Object}" options="{Object}" filters="{String}" -->
       <div
         class="file-upload btn btn-success"
-        ng-disabled="!pathSelected"
+        ng-disabled="!dirSelected"
       >
         <span>Choose files</span>
         <input

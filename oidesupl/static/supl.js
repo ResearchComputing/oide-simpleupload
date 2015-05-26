@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('oide.supl', ['ngRoute','ui.bootstrap','angularFileUpload'])
+angular.module('oide.supl', ['ngRoute','ui.bootstrap','angularFileUpload','treeControl'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/supl', {
@@ -8,23 +8,15 @@ angular.module('oide.supl', ['ngRoute','ui.bootstrap','angularFileUpload'])
     controller: 'SuplCtrl'
   });
 }])
-.controller('SuplCtrl', ['$scope', 'FileUploader', '$log', function($scope,FileUploader,$log) {
+.controller('SuplCtrl', ['$scope', 'FileUploader', '$modal','$log', function($scope,FileUploader,$modal,$log) {
   var uploader = $scope.uploader = new FileUploader({
        url: '/supl/a/upload',
-       headers: {'X-XSRFToken': getCookie('_xsrf')},
+       headers: {
+                  'X-XSRFToken': getCookie('_xsrf'),
+                  'uploadDir': $scope.dirpath
+                },
        formData: []
    });
-
-   // FILTERS
-
-  //  uploader.filters.push({
-  //      name: 'customFilter',
-  //      fn: function(item /*{File|FileLikeObject}*/, options) {
-  //          return this.queue.length < 10;
-  //      }
-  //  });
-
-   // CALLBACKS
 
    uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
        console.info('onWhenAddingFileFailed', item, filter, options);
@@ -59,6 +51,94 @@ angular.module('oide.supl', ['ngRoute','ui.bootstrap','angularFileUpload'])
    uploader.onCompleteAll = function() {
        console.info('onCompleteAll');
    };
-
    console.info('uploader', uploader);
-}]);
+
+   $scope.dirpath = 'No directory selected'
+
+   $scope.selectDirectory = function (size) {
+
+    var modalInstance = $modal.open({
+      backdrop: 'static',
+      keyboard: false,
+      templateUrl: '/static/supl/dir-select-modal.html',
+      controller: 'DirSelectModalCtrl',
+      size: 'lg'
+    });
+
+    modalInstance.result.then(function (uploadDir) {
+      if (uploadDir.hasOwnProperty('dirpath')) {
+        $scope.dirpath = uploadDir.dirpath;
+        if (!$scope.dirSelected) {
+          $scope.dirSelected = true;
+        }
+      }
+    }, function () {
+      $log.info('Modal dismissed at: ' + new Date());
+    });
+  };
+}])
+.controller('DirSelectModalCtrl', function ($scope, $modalInstance, $http) {
+  $scope.uploadDir = {};
+  $scope.invalidFilepath = true;
+  $scope.treeData = {};
+  $scope.treeOptions = {
+    multiSelection: false,
+    isLeaf: function(node) {
+      return node.type !== 'dir';
+    },
+    injectClasses: {
+      iExpanded: "filetree-icon fa fa-folder-open",
+      iCollapsed: "filetree-icon fa fa-folder",
+      iLeaf: "filetree-icon fa fa-file",
+    }
+  };
+  var initialContents = $http
+    .get('/filebrowser/filetree/a/dir')
+    .success(function(data, status, headers, config) {
+      for (var i=0;i<data.length;i++) {
+        data[i].children = [];
+      }
+      $scope.treeData.filetreeContents = data;
+    }).
+    error(function(data, status, headers, config) {
+      $log.error('Failed to initialize filetree.');
+    });
+    $scope.getDirContents = function (node,expanded) {
+      $http
+        .get('/filebrowser/filetree/a/dir', {
+          params: {
+            dirpath: node.filepath
+          }
+        }).
+        success(function(data, status, headers, config) {
+          for (var i=0;i<data.length;i++) {
+            if (!data[i].hasOwnProperty('children')) {
+              data[i].children = [];
+            }
+          }
+          node.children = data;
+        }).
+        error(function(data, status, headers, config) {
+          $log.error('Failed to grab dir contents from ',node.filepath);
+        });
+  };
+
+  $scope.updateDirName = function (node, selected) {
+    $scope.invalidFilepath = false;
+    if (node.type === 'dir') {
+      $scope.uploadDir.dirpath = node.filepath;
+    } else {
+      var index = node.filepath.lastIndexOf('/')+1;
+      var dirpath = node.filepath.substring(0,index);
+      $scope.uploadDir.dirpath = dirpath;
+    }
+  };
+
+  $scope.selectDir = function () {
+    $modalInstance.close($scope.uploadDir);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+});
