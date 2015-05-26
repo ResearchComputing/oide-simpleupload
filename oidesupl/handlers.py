@@ -8,38 +8,43 @@ from oide.lib.handlers.base import BaseHandler
 
 
 
-@tornado.web.stream_body
+@tornado.web.stream_request_body
 class SimpleUploadHandler(BaseHandler):
 
     @tornado.web.authenticated
     def post(self):
-        # open a file or a socket to stream the uploaded data to
-        self.fp = open('file_{0}'.format(uuid.uuid1().hex), 'w')
-        self.request.request_continue()
-        self.read_bytes = 0
-        self._read_chunk()
+        self.fp.close()
 
-    def _read_chunk(self):
-        # set the chunk size and read bytes from the stream
-        chunk_length = min(10000,
-            self.request.content_length - self.read_bytes)
-        if chunk_length > 0:
-            self.request.connection.stream.read_bytes(
-                chunk_length, self._on_chunk)
-        else:
-            self.fp.close()
-            self._on_uploaded()
+    @tornado.web.authenticated
+    def prepare(self):
+        self.stream_started = False
+        self.request.connection.set_max_body_size(2*1024**3)
+        self.fp = open('/tmp/file_{0}'.format(uuid.uuid1().hex), 'w')
 
-    def _on_chunk(self, chunk):
-        if chunk:
-            # write chunk of data to disk
-            self.fp.write(chunk)
-            self.read_bytes += len(chunk)
-        else:
-            # no more incoming data, set correct content_length
-            self.content_length = self.read_bytes
-        self._read_chunk()
+    def data_received(self, data):
+        pdata = self._process(data)
+        self.fp.write(pdata)
 
-    def _on_uploaded(self):
-        self.write("Uploaded!")
-        self.finish()
+    def _process(self, data):
+        trimmed = data.splitlines()
+        tmp = data.splitlines(True)
+
+        if not self.stream_started:
+            self.boundary = trimmed[0].strip()
+            tmp = tmp[1:]
+            trimmed = trimmed[1:]
+            self.stream_started = True
+
+            try:
+                first_elem = trimmed[:5].index("")
+                tmp = tmp[first_elem + 1:]
+                trimmed = trimmed[first_elem + 1:]
+            except ValueError:
+                pass
+
+        try:
+            last_elem = trimmed.index(self.boundary + "--")
+            self.stream_started = False
+            return "".join(tmp[:last_elem - 1])
+        except ValueError:
+            return "".join(tmp)
