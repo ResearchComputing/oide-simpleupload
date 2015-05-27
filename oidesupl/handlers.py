@@ -6,13 +6,15 @@ import tornado.web
 import Pyro4
 
 from oide.lib.handlers.base import BaseHandler
+from oide.lib.mixins.fs_mixin import FSMixin
+
 import oide.settings as global_settings
 import oidesupl.settings as app_settings
 
 
 
 @tornado.web.stream_request_body
-class SimpleUploadHandler(BaseHandler):
+class SimpleUploadHandler(BaseHandler,FSMixin):
 
     def initialize(self):
         pyro_uri = app_settings.PYRO_UPLDMODULE_URI%{'username':self.current_user}
@@ -25,18 +27,21 @@ class SimpleUploadHandler(BaseHandler):
 
     @tornado.web.authenticated
     def post(self):
-        self.upld_writer.close_fd(self.filepath)
+        fp = self.get_argument('uploadDir')
+        fn = self.get_argument('filename')
+        dest_path = os.path.join(fp,fn)
+        self.upld_writer.close_fd(self.tmp_uuid,dest_path)
 
     @tornado.web.authenticated
     def prepare(self):
         self.stream_started = False
-        self.filepath = self.get_argument('filepath')
+        self.tmp_uuid = uuid.uuid1().hex
         self.request.connection.set_max_body_size(2*1024**3)
-        self.upld_writer.open_fd(self.filepath)
+        self.upld_writer.open_fd(self.tmp_uuid)
 
     def data_received(self, data):
         pdata = self._process(data)
-        self.upld_writer.write_to_fd(self.filepath,pdata)
+        self.upld_writer.write_to_fd(self.tmp_uuid,pdata)
 
     def _process(self, data):
         trimmed = data.splitlines()
