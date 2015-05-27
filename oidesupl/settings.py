@@ -18,3 +18,9 @@ APP_SPECIFICATION = {
         'supl.js',
     ),
 }
+
+PYRO_UPLDMODULE_URI = 'upld.userd.%(username)s'
+
+POST_AUTH_COMMANDS = (
+    "(python -m oidesupl.oideupld &)",
+)
