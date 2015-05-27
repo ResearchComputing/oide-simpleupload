@@ -5,25 +5,37 @@ import random
 import tornado.web
 
 from oide.lib.handlers.base import BaseHandler
+import oide.settings. as global_settings
+import oidesupl.settings as app_settings
 
 
 
 @tornado.web.stream_request_body
 class SimpleUploadHandler(BaseHandler):
 
+    def initialize(self):
+        pyro_uri = app_settings.PYRO_UPLDMODULE_URI%{'username':self.current_user}
+        self.upld_writer = Pyro4.Proxy('PYRONAME:%s@%s:%d'%(
+            pyro_uri,
+            global_settings.PYRO_NAMESERVER_HOST,
+            global_settings.PYRO_NAMESERVER_PORT
+            )
+        )
+
     @tornado.web.authenticated
     def post(self):
-        self.fp.close()
+        self.upld_writer.close_fd(self.filepath)
 
     @tornado.web.authenticated
     def prepare(self):
         self.stream_started = False
+        self.filepath = self.get_argument('filepath')
         self.request.connection.set_max_body_size(2*1024**3)
-        self.fp = open('/tmp/file_{0}'.format(uuid.uuid1().hex), 'w')
+        self.upld_writer.open_fd(self.filepath)
 
     def data_received(self, data):
         pdata = self._process(data)
-        self.fp.write(pdata)
+        self.upld_writer.write_to_fd(self.filepath,pdata)
 
     def _process(self, data):
         trimmed = data.splitlines()
