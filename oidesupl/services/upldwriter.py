@@ -1,8 +1,3 @@
-import os
-import sys
-
-
-
 class UploadWriter():
 
     def __init__(self):

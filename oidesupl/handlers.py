@@ -3,9 +3,10 @@ import uuid
 import string
 import random
 import tornado.web
+import Pyro4
 
 from oide.lib.handlers.base import BaseHandler
-import oide.settings. as global_settings
+import oide.settings as global_settings
 import oidesupl.settings as app_settings
 
 
