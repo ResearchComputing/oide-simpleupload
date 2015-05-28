@@ -16,13 +16,14 @@ class UploadWriter():
         except KeyError:
             pass
 
-        self.open_fds[tmp_uuid] = tempfile.mkstemp()
+        fd_info = tempfile.mkstemp()
+        self.open_fds[tmp_uuid] = open(fd_info[1],'w')
 
     def close_fd(self,tmp_uuid,filepath):
         try:
             fd = self.open_fds[tmp_uuid]
             fd.close()
-            shutil.move(fd[1],filepath)
+            shutil.move(fd.name,filepath)
             del self.open_fds[tmp_uuid]
         except KeyError:
             pass
