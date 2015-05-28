@@ -6,7 +6,6 @@ import tornado.web
 import Pyro4
 
 from oide.lib.handlers.base import BaseHandler
-from oide.lib.mixins.fs_mixin import FSMixin
 
 import oide.settings as global_settings
 import oidesupl.settings as app_settings
@@ -14,7 +13,7 @@ import oidesupl.settings as app_settings
 
 
 @tornado.web.stream_request_body
-class SimpleUploadHandler(BaseHandler,FSMixin):
+class SimpleUploadHandler(BaseHandler):
 
     def initialize(self):
         pyro_uri = app_settings.PYRO_UPLDMODULE_URI%{'username':self.current_user}
