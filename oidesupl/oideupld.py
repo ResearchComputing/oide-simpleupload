@@ -9,7 +9,7 @@ import oidesupl.settings as app_settings
 
 
 def main():
-    upload_writer=UploadWriter
+    upload_writer=UploadWriter()
 
     user_dict = {'username':getpass.getuser()}
 
