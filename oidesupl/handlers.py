@@ -15,7 +15,6 @@ class SimpleUploadHandler(BaseHandler):
 
     @tornado.web.authenticated
     def post(self):
-        import pdb; pdb.set_trace()
         fp = self.request.headers['Uploaddir']
         dest_path = os.path.join(fp,self.filename)
         self.fd.close()
