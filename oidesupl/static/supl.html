@@ -62,7 +62,7 @@
                 type="button"
                 class="btn btn-success btn-xs"
                 ng-click="item.upload()"
-                ng-disabled="!pathSelected || item.isReady || item.isUploading || item.isSuccess"
+                ng-disabled="item.isReady || item.isUploading || item.isSuccess"
               >
                 <span class="fa fa-arrow-circle-o-up"></span> Upload
               </button>
