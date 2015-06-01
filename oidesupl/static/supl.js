@@ -12,18 +12,24 @@ angular.module('oide.supl', ['ngRoute','ui.bootstrap','angularFileUpload','treeC
   var uploader = $scope.uploader = new FileUploader({
        url: '/supl/a/upload',
        headers: {
-                  'X-XSRFToken': getCookie('_xsrf'),
-                  'uploadDir': $scope.dirpath
-                },
-       formData: []
+                  'X-XSRFToken': getCookie('_xsrf')
+                }
    });
+
+  uploader.filters.push({
+    name: 'customFilter',
+    fn: function(item /*{File|FileLikeObject}*/, options) {
+      return this.queue.length < 10;
+    }
+  });
 
    uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
        console.info('onWhenAddingFileFailed', item, filter, options);
    };
-   uploader.onAfterAddingFile = function(fileItem) {
-       console.info('onAfterAddingFile', fileItem);
-   };
+    uploader.onAfterAddingFile = function(fileItem) {
+      fileItem.headers['uploadDir'] = $scope.dirpath;
+      console.info('onAfterAddingFile', fileItem);
+    };
    uploader.onAfterAddingAll = function(addedFileItems) {
        console.info('onAfterAddingAll', addedFileItems);
    };

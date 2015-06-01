@@ -15,20 +15,22 @@ class SimpleUploadHandler(BaseHandler):
 
     @tornado.web.authenticated
     def post(self):
-        fp = self.get_argument('uploadDir')
-        fn = self.get_argument('filename')
-        dest_path = os.path.join(fp,fn)
+        import pdb; pdb.set_trace()
+        fp = self.request.headers['Uploaddir']
+        dest_path = os.path.join(fp,self.filename)
         self.fd.close()
         shutil.move(self.fd.name,dest_path)
 
     @tornado.web.authenticated
     def prepare(self):
+        self.tmp_cache = ''
         self.stream_started = False
         self.request.connection.set_max_body_size(2*1024**3)
         fd_info = tempfile.mkstemp()
         self.fd = open(fd_info[1],'w')
 
     def data_received(self, data):
+        self.tmp_cache += data
         pdata = self._process(data)
         self.fd.write(pdata)
 
@@ -44,6 +46,8 @@ class SimpleUploadHandler(BaseHandler):
 
             try:
                 first_elem = trimmed[:5].index("")
+                metadata = trimmed[:first_elem]
+                self.filename = metadata[0].split(';')[-1].split('=')[-1][1:-1]
                 tmp = tmp[first_elem + 1:]
                 trimmed = trimmed[first_elem + 1:]
             except ValueError:
