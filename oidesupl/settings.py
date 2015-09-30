@@ -14,7 +14,7 @@ APP_SPECIFICATION = {
     ),
     'NG_MODULE_SCRIPTS': (
         'bower_components/es5-shim/es5-shim.min.js',
-        'bower_components/angular-file-upload/angular-file-upload.min.js',
+        'bower_components/angular-file-upload/dist/angular-file-upload.min.js',
         'supl.js',
     ),
 }
