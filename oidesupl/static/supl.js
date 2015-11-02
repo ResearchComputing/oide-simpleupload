@@ -1,12 +1,14 @@
 'use strict';
 
-angular.module('oide.supl', ['ngRoute','ui.bootstrap','angularFileUpload','treeControl'])
+angular.module('oide.supl', ['angularFileUpload','treeControl'])
 
-.config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/supl', {
-    templateUrl: '/static/supl/supl.html',
-    controller: 'SuplCtrl'
-  });
+.config(['$stateProvider','$urlRouterProvider',function($stateProvider,$urlRouterProvider) {
+  $stateProvider
+    .state('supl', {
+      url: '/supl',
+      templateUrl: '/static/supl/supl.html',
+      controller: 'SuplCtrl'
+    });
 }])
 .controller('SuplCtrl', ['$scope', 'FileUploader', '$modal','$log', function($scope,FileUploader,$modal,$log) {
   var uploader = $scope.uploader = new FileUploader({
@@ -59,7 +61,7 @@ angular.module('oide.supl', ['ngRoute','ui.bootstrap','angularFileUpload','treeC
    };
    console.info('uploader', uploader);
 
-   $scope.dirpath = 'No directory selected'
+   $scope.dirpath = 'No directory selected';
 
    $scope.selectDirectory = function (size) {
 
